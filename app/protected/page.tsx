@@ -1,38 +1,35 @@
-import FetchDataSteps from "@/components/tutorial/fetch-data-steps";
-import { createClient } from "@/utils/supabase/server";
-import { InfoIcon } from "lucide-react";
-import { redirect } from "next/navigation";
+'use client';
 
-export default async function ProtectedPage() {
-  const supabase = await createClient();
+import React from 'react';
+import { useRouter } from 'next/navigation';
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    return redirect("/sign-in");
-  }
+const LandingPage: React.FC = () => {
+  const router = useRouter();
 
   return (
-    <div className="flex-1 w-full flex flex-col gap-12">
-      <div className="w-full">
-        <div className="bg-accent text-sm p-3 px-5 rounded-md text-foreground flex gap-3 items-center">
-          <InfoIcon size="16" strokeWidth={2} />
-          This is a protected page that you can only see as an authenticated
-          user
-        </div>
-      </div>
-      <div className="flex flex-col gap-2 items-start">
-        <h2 className="font-bold text-2xl mb-4">Your user details</h2>
-        <pre className="text-xs font-mono p-3 rounded border max-h-32 overflow-auto">
-          {JSON.stringify(user, null, 2)}
-        </pre>
-      </div>
-      <div>
-        <h2 className="font-bold text-2xl mb-4">Next steps</h2>
-        <FetchDataSteps />
-      </div>
+    <div className="min-h-screen w-full bg-gray-900 p-6 text-white flex flex-col items-center justify-center">
+      <h1 className="text-4xl font-bold mb-4">Bienvenido a nuestra Plataforma</h1>
+      <p className="text-lg text-gray-300 mb-6">Gestiona tus datos de manera eficiente y sencilla.</p>
+      <button
+        onClick={() => router.push('/protected/sumar')}
+        className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-lg transition-colors"
+      >
+        Ir a Sumas
+      </button>
+      <button
+        onClick={() => router.push('/protected/restas')}
+        className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-lg transition-colors"
+      >
+        Ir a Restas
+      </button>
+      <button
+        onClick={() => router.push('/protected/multi')}
+        className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-lg transition-colors"
+      >
+        Ir a Multiplicaciones
+      </button>
     </div>
   );
-}
+};
+
+export default LandingPage;
