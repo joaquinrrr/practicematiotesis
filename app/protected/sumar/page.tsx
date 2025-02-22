@@ -6,6 +6,14 @@ import { useRouter } from 'next/navigation';
 
 const supabase = createClient();
 
+const shuffleArray = (array: any[]) => {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+};
+
 interface Problem {
   id: number;
   tipo_operacion: string;
@@ -15,6 +23,8 @@ interface Problem {
   dificultad: number;
 }
 
+
+
 const MathQuiz: React.FC = () => {
   const [problems, setProblems] = useState<Problem[]>([]);
   const [currentProblemIndex, setCurrentProblemIndex] = useState(0);
@@ -22,20 +32,18 @@ const MathQuiz: React.FC = () => {
   const router = useRouter();
 
   useEffect(() => {
-    // Fetch 5 random "suma" problems from Supabase
     const fetchProblems = async () => {
       setLoading(true);
       const { data, error } = await supabase
-        .from('problemas') // Nombre de la tabla
+        .from('problemas')
         .select('*')
-        .eq('tipo_operacion', 'suma') // Filtrar por tipo_operacion = suma
-        .limit(5) // Obtener solo 5 problemas
-        .order('id', { ascending: false }); // Ordenar aleatoriamente (puedes ajustar según tu lógica)
-
+        .eq('tipo_operacion', 'suma')
+        .limit(5);
+      
       if (error) {
         console.error('Error fetching problems:', error);
       } else if (data) {
-        setProblems(data);
+        setProblems(shuffleArray(data));
       }
       setLoading(false);
     };
@@ -51,12 +59,11 @@ const MathQuiz: React.FC = () => {
       alert(`Incorrecto, la respuesta correcta es ${currentProblem.respuesta}`);
     }
 
-    // Mover al siguiente problema
     if (currentProblemIndex < problems.length - 1) {
       setCurrentProblemIndex(currentProblemIndex + 1);
     } else {
       alert('¡Has completado todos los problemas!');
-      setCurrentProblemIndex(0); // Reiniciar el índice
+      setCurrentProblemIndex(0);
     }
   };
 
@@ -77,12 +84,12 @@ const MathQuiz: React.FC = () => {
   }
 
   const currentProblem = problems[currentProblemIndex];
-  const options = [
+  const options = shuffleArray([
     currentProblem.respuesta,
     currentProblem.respuesta + 1,
     currentProblem.respuesta - 1,
     currentProblem.respuesta + 2,
-  ].sort(() => Math.random() - 0.5); // Mezclar las opciones
+  ]);
 
   return (
     <div className="min-h-screen w-full bg-gray-900 p-6 text-white flex flex-col items-center justify-center">
